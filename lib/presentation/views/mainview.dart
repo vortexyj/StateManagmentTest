@@ -1,31 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:statemangmenttest1/presentation/model/state.dart';
 
-class StateTaster extends StatefulWidget {
-  @override
-  _StateTasterState createState() => _StateTasterState();
-}
-
-class _StateTasterState extends State<StateTaster> {
-  final List<String> _tasks = [];
+class StateTaster extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
-
-  void _addTask() {
-    setState(() {
-      if (_controller.text.isNotEmpty) {
-        _tasks.add(_controller.text);
-        _controller.clear();
-      }
-    });
-  }
-
-  void _removeTask(int index) {
-    setState(() {
-      _tasks.removeAt(index);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<ProviderState>(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 12.0),
@@ -38,25 +19,33 @@ class _StateTasterState extends State<StateTaster> {
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      decoration: InputDecoration(labelText: 'Enter task'),
+                      decoration:
+                          const InputDecoration(labelText: 'Enter task'),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: _addTask,
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      final task = _controller.text;
+                      if (task.isNotEmpty) {
+                        taskProvider.addTask(
+                            task); // بنضيف المهمة باستخدام الـ Provider
+                        _controller.clear();
+                      }
+                    },
                   ),
                 ],
               ),
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: _tasks.length,
+                itemCount: taskProvider.tasks.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(_tasks[index]),
+                    title: Text(taskProvider.tasks[index]),
                     trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => _removeTask(index),
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => taskProvider.removeTask(index),
                     ),
                   );
                 },

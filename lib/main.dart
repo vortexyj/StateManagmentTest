@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:statemangmenttest1/presentation/model/state.dart';
 import 'package:statemangmenttest1/presentation/views/mainview.dart';
 
 void main() {
@@ -8,8 +10,11 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: StateTaster(),
+    return ChangeNotifierProvider(
+      create: (_) => ProviderState(),
+      child: MaterialApp(
+        home: StateTaster(),
+      ),
     );
   }
 }
