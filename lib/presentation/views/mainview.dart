@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:statemangmenttest1/presentation/model/state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:statemangmenttest1/presentation/model/bloc/testbloc_bloc.dart';
 
-class StateTaster extends ConsumerWidget {
+class StateTaster extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final task = ref.watch(taskProvider);
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 12.0),
@@ -28,10 +27,7 @@ class StateTaster extends ConsumerWidget {
                     onPressed: () {
                       final task = _controller.text;
                       if (task.isNotEmpty) {
-                        // Step 4: Use ref.read to interact with the provider's notifier
-                        ref
-                            .read(taskProvider.notifier)
-                            .addTask(task); // Adding a task
+                        context.read<TestblocBloc>().add(AddTaskEvent(task));
                         _controller.clear();
                       }
                     },
@@ -40,18 +36,29 @@ class StateTaster extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: task.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(task[index]),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        ref.read(taskProvider.notifier).removeTask(index);
+              child: BlocBuilder<TestblocBloc, TestblocState>(
+                builder: (context, state) {
+                  if (state is TestblocSuccess) {
+                    return ListView.builder(
+                      itemCount: state.task.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(state.task[index]),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              context
+                                  .read<TestblocBloc>()
+                                  .add(RemoveTaskEvent(index));
+                            },
+                          ),
+                        );
                       },
-                    ),
-                  );
+                    );
+                  } else if (state is TestblocFailure) {
+                    return Center(child: Text(state.err));
+                  }
+                  return const Center(child: CircularProgressIndicator());
                 },
               ),
             ),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:statemangmenttest1/presentation/model/bloc/testbloc_bloc.dart';
 import 'package:statemangmenttest1/presentation/views/mainview.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(ProviderScope(
-    child: MyApp(),
-  ));
+  runApp(
+    MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,7 +15,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: StateTaster(),
+      home: BlocProvider(
+        create: (context) => TestblocBloc(),
+        child: StateTaster(),
+      ),
     );
   }
 }
