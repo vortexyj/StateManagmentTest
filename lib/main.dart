@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:statemangmenttest1/presentation/model/state.dart';
 import 'package:statemangmenttest1/presentation/views/mainview.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProviderState(),
-      child: MaterialApp(
-        home: StateTaster(),
-      ),
+    return MaterialApp(
+      home: StateTaster(),
     );
   }
 }

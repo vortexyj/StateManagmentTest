@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:statemangmenttest1/presentation/model/state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class StateTaster extends StatelessWidget {
+class StateTaster extends ConsumerWidget {
   final TextEditingController _controller = TextEditingController();
   @override
-  Widget build(BuildContext context) {
-    final taskProvider = Provider.of<ProviderState>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final task = ref.watch(taskProvider);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 12.0),
@@ -28,8 +28,10 @@ class StateTaster extends StatelessWidget {
                     onPressed: () {
                       final task = _controller.text;
                       if (task.isNotEmpty) {
-                        taskProvider.addTask(
-                            task); // بنضيف المهمة باستخدام الـ Provider
+                        // Step 4: Use ref.read to interact with the provider's notifier
+                        ref
+                            .read(taskProvider.notifier)
+                            .addTask(task); // Adding a task
                         _controller.clear();
                       }
                     },
@@ -39,13 +41,15 @@ class StateTaster extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: taskProvider.tasks.length,
+                itemCount: task.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(taskProvider.tasks[index]),
+                    title: Text(task[index]),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () => taskProvider.removeTask(index),
+                      onPressed: () {
+                        ref.read(taskProvider.notifier).removeTask(index);
+                      },
                     ),
                   );
                 },
